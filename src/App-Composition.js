@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 
 const App = () => {
   let [currentUser, setCurrentUser] = useState(null);
-
+  let Context = React.createContext();
   const onLoginHandler = (user) => {
     setCurrentUser(user);
   };
@@ -29,21 +29,23 @@ const App = () => {
   };
 
   return (
-    <div style={mainDiv}>
-      <div style={headerDiv}>
-        <Header />
+    <Context.Provider currentUser={{ currentUser }}>
+      <div style={mainDiv}>
+        <div style={headerDiv}>
+          <Header />
+        </div>
+        <div style={bodyDiv}>
+          {currentUser ? (
+            <Dashboard />
+          ) : (
+            <LoginScreen onLogin={() => onLoginHandler({ name: "Michael" })} />
+          )}
+        </div>
+        <div style={footerDiv}>
+          <Footer />
+        </div>
       </div>
-      <div style={bodyDiv}>
-        {currentUser ? (
-          <Dashboard user={currentUser} />
-        ) : (
-          <LoginScreen onLogin={() => onLoginHandler({ name: "Michael" })} />
-        )}
-      </div>
-      <div style={footerDiv}>
-        <Footer />
-      </div>
-    </div>
+    </Context.Provider>
   );
 };
 
@@ -62,12 +64,12 @@ const Footer = () => {
     </div>
   );
 };
-const Dashboard = ({ user }) => {
+const Dashboard = () => {
   return (
     <div>
       <h1>Dashboard</h1>
       <DashboardNav />
-      <DashboardContent user={user} />
+      <DashboardContent />
     </div>
   );
 };
@@ -89,17 +91,19 @@ const DashboardNav = () => {
   );
 };
 
-const DashboardContent = ({ user }) => {
+const DashboardContent = () => {
   return (
     <div>
       <h1>DashboardContent</h1>
-      <WelcomeMessage user={user} />
+
+      <WelcomeMessage />
     </div>
   );
 };
 
-const WelcomeMessage = ({ user }) => {
-  return <div>Welcome {user.name}</div>;
+const WelcomeMessage = () => {
+  let { currentUser } = React.useContext(Context);
+  return <div>Welcome {currentUser.name}</div>;
 };
 
 export default App;
