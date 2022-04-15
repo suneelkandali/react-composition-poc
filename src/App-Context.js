@@ -1,10 +1,11 @@
 import React, { useContext, useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
+let Context = React.createContext();
 
 const App = () => {
   let [currentUser, setCurrentUser] = useState(null);
-  //let Context = React.createContext();
+
   const onLoginHandler = (user) => {
     setCurrentUser(user);
   };
@@ -29,26 +30,23 @@ const App = () => {
   };
 
   return (
-    <div style={mainDiv}>
-      <div style={headerDiv}>
-        <Header />
+    <Context.Provider value={{ currentUser }}>
+      <div style={mainDiv}>
+        <div style={headerDiv}>
+          <Header />
+        </div>
+        <div style={bodyDiv}>
+          {currentUser ? (
+            <Dashboard />
+          ) : (
+            <LoginScreen onLogin={() => onLoginHandler({ name: "Michael" })} />
+          )}
+        </div>
+        <div style={footerDiv}>
+          <Footer />
+        </div>
       </div>
-      <div style={bodyDiv}>
-        {currentUser ? (
-          <Dashboard>
-            <DashboardNav />
-            <DashboardContent>
-              <WelcomeMessage user={currentUser} />
-            </DashboardContent>
-          </Dashboard>
-        ) : (
-          <LoginScreen onLogin={() => onLoginHandler({ name: "Michael" })} />
-        )}
-      </div>
-      <div style={footerDiv}>
-        <Footer />
-      </div>
-    </div>
+    </Context.Provider>
   );
 };
 
@@ -67,11 +65,12 @@ const Footer = () => {
     </div>
   );
 };
-const Dashboard = ({ children }) => {
+const Dashboard = () => {
   return (
     <div>
       <h1>Dashboard</h1>
-      {children}
+      <DashboardNav />
+      <DashboardContent />
     </div>
   );
 };
@@ -85,26 +84,28 @@ const LoginScreen = ({ onLogin }) => {
   );
 };
 
-const DashboardNav = ({ children }) => {
+const DashboardNav = () => {
   return (
     <div>
       <h1>DashboardNav</h1>
-      {children}
     </div>
   );
 };
 
-const DashboardContent = ({ children }) => {
+const DashboardContent = () => {
   return (
     <div>
       <h1>DashboardContent</h1>
-      {children}
+
+      <WelcomeMessage />
     </div>
   );
 };
 
-const WelcomeMessage = ({ user }) => {
-  return <div>Welcome {user.name}</div>;
+const WelcomeMessage = () => {
+  //let Context = React.createContext();
+  let { currentUser } = React.useContext(Context);
+  return <div>Welcome {currentUser.name}</div>;
 };
 
 export default App;
